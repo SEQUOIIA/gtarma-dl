@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/sequoiia/arma3mission-dl/client"
+	"github.com/sequoiia/gtarma-dl/client"
 	"net/http"
 	"os"
 )

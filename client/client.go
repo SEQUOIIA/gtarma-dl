@@ -3,7 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sequoiia/arma3mission-dl/model"
+	"github.com/sequoiia/gtarma-dl/model"
 	"io"
 	"log"
 	"net/http"
