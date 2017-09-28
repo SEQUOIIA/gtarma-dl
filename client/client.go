@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
 )
 
 const DRIVEFILES_ENDPOINT string = "https://clients6.google.com/drive/v2beta/files"
@@ -57,17 +58,18 @@ func (d *DlClient) GetFiles() *model.GoogleDriveGetFilesResponse {
 }
 
 func (d *DlClient) DownloadFiles(files *model.GoogleDriveGetFilesResponse, path string) {
+	var wg sync.WaitGroup
+	wg.Add(len(files.Items))
 	for i := 0; i < len(files.Items); i++ {
 		file := files.Items[i]
-		fmt.Printf("Downloading %s\n", file.Filename)
-		err := d.DownloadFile(file.Id, file.Filename, path)
-		if err != nil {
-			log.Fatal(err)
-		}
+		go d.DownloadFile(file.Id, file.Filename, path, &wg)
 	}
+
+	wg.Wait()
 }
 
-func (d *DlClient) DownloadFile(id string, filename string, path string) error {
+func (d *DlClient) DownloadFile(id string, filename string, path string, wg *sync.WaitGroup) error {
+	defer wg.Done()
 	u, err := url.Parse(DRIVEDLFILE_ENDPOINT)
 	if err != nil {
 		return err
@@ -98,5 +100,6 @@ func (d *DlClient) DownloadFile(id string, filename string, path string) error {
 		return err
 	}
 
+	fmt.Printf("Finished downloading -> %s\n", filename)
 	return nil
 }
